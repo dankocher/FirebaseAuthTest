@@ -9,7 +9,7 @@
   "dependencies": {
     "@firebase/app": "latest",
     "@firebase/auth": "latest",
-    "firebase": "^5.8.0",
+    "firebase": "^5.8.1",
     "react": "16.6.3",
     "react-native": "0.57.8",
     "react-native-google-signin": "^1.0.2"

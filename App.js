@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {Platform, StyleSheet, Text, View, ActivityIndicator} from 'react-native';
-import firebase from '@firebase/app';
+import { firebase } from '@firebase/app';
 import 'firebase/auth';
 import { GoogleSignin } from 'react-native-google-signin';
 // import * as firebase from 'firebase/auth';
@@ -80,7 +80,7 @@ export default class App extends Component {
     if (this.state.user !== null) {
       return (
           <View style={styles.form}>
-            <Text>Logged In</Text>
+            <Text>{this.state.user.email}</Text>
             <Button onPress={() => this.onPressLogOut()}>Log Out</Button>
           </View>
       )
@@ -103,6 +103,7 @@ export default class App extends Component {
           />
           <Button onPress={() => this.onPressSignIn()}>Log In</Button>
           <Button onPress={this.onPressSignInGoogle}>Sign In with google</Button>
+          <Button onPress={this.onPressSignInFacebook}>Sign In with Facebook</Button>
           <Text>{this.state.error}</Text>
         </View>
     )
@@ -113,21 +114,17 @@ export default class App extends Component {
             authenticating: true,
         });
         try {
-            console.log("Google");
-            // add any configuration settings here:
             await GoogleSignin.configure();
-
-            console.log("GoogleSignin");
             const data = await GoogleSignin.signIn();
-            console.log("GoogleSignin.signIn");
-            console.log(data);
-
-            // create a new firebase credential with the token
             const credential = firebase.auth.GoogleAuthProvider.credential(data.idToken, data.accessToken);
-            // login with credential
-            const firebaseUserCredential = await firebase.auth().signInWithCredential(credential);
+            const firebaseUserCredential = await firebase.auth().signInAndRetrieveDataWithCredential(credential);
+            const user = firebaseUserCredential.user;
 
-            console.warn(JSON.stringify(firebaseUserCredential.user.toJSON()));
+            console.log(firebaseUserCredential.user);
+            this.setState({
+                  authenticating: false,
+                  user: firebaseUserCredential.user
+              });
         } catch (e) {
             console.log(e);
             this.setState({
